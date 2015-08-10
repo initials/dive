@@ -1,0 +1,41 @@
+body { margin:0; padding:0; overflow-x: hidden; font-family: Arial, Tahoma, Verdana !important; background: #003f82;}
+#phaser-example {
+	
+	width: 				600px;
+	margin: 			0 auto 20px auto;
+	#background-color: 	#F5B453;
+
+	padding: 			25px 25px 25px 25px;
+	
+}
+#text-place {
+	width: 				600px;
+	margin: 			0 auto 20px auto;
+	#background-color: 	#F5B453;
+
+	padding: 			25px 25px 25px 25px;
+}
+.tweet-link {
+  margin-top: 10px;
+  margin-left: 0px;
+  float: left;
+  font-size: 1em;
+}
+
+a {
+	color: 				#E56C60;
+	text-decoration: 	none;
+	
+}
+a:link {color:#E56C60;}      /* unvisited link */
+a:visited {color:#E56C60;}  /* visited link */
+a:hover {color:#ffffff;}  /* mouse over link */
+a:active {color:#E56C60;}  /* selected link */
+
+#tweet-place {
+   width:            600px;
+   margin:        0 auto 20px auto;
+   #background-color:   #F5B453;
+
+   padding:          25px 25px 25px 25px;
+}
