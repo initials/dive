@@ -158,8 +158,8 @@ function update()
 		bubbles.start(true, 2000, null, 2);
 	}
 
-	bubbles.x = diver.x + diver.width/2;
-	bubbles.y = diver.y + diver.height/2;
+	bubbles.x = diver.body.x + diver.body.width/2;
+	bubbles.y = diver.body.y + diver.body.height/2;
 
 	game.physics.arcade.collide(diver, divingPlatform, collisionHandler, null, this);
 	game.physics.arcade.collide(diver, poolSide, collisionHandler, null, this);
@@ -167,7 +167,7 @@ function update()
 
 	//find out if diver is underwater
 
-	if (diver.y > diveHeight)
+	if (diver.body.y > diveHeight)
 	{
 		timeUnderwater++;
 		
@@ -190,7 +190,7 @@ function update()
 		if (i<animSeq.length) {
 			if (diver.animations.currentAnim.name=='swim') 
 			{
-				if (diver.x < 901) {
+				if (diver.body.x < 901) {
 					console.log('swim ++')
 					diver.play(animSeq[i+1]);
 				}
