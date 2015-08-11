@@ -139,9 +139,9 @@ function create() {
 // render used for debug only.
 function render() {
 
-	game.debug.body(diver);
+	//game.debug.body(diver);
 	game.debug.text(diver.animations.currentAnim.name + " " + diver.body.velocity.x + " " + diver.body.velocity.y, 10, 10)
-
+	game.debug.text(diver.x + " " + diver.y, 10, 50)
 	
 	game.debug.geom(waterLevel);
     //game.debug.lineInfo(waterLevel, 32, 32);
@@ -156,8 +156,6 @@ function update()
 	if (timeUnderwater>1 && timeUnderwater<120)
 	{
 		bubbles.start(true, 2000, null, 2);
-		
-
 	}
 
 	bubbles.x = diver.x + diver.width/2;
@@ -172,20 +170,39 @@ function update()
 	if (diver.y > diveHeight)
 	{
 		timeUnderwater++;
-
 		
 		//diver.body.velocity.setTo(0, 0);
 		diver.body.acceleration.setTo(0, 0);
 
+	}
+	else if (diver.animations.currentAnim.name=='swim' || diver.animations.currentAnim.name=='glide')
+	{
+		diver.body.velocity.y = 0;
 
 	}
+
 
 	//if (game.input.mousePointer.isDown || game.input.touch.isDown || game.input.isDown || game.input.pointer1.isDown)
 	if (game.input.mousePointer.justPressed())
 	{
 		var i = animSeq.indexOf(diver.animations.currentAnim.name);
-		if (i<animSeq.length)
-			diver.play(animSeq[i+1]);
+		
+		if (i<animSeq.length) {
+			if (diver.animations.currentAnim.name=='swim') 
+			{
+				if (diver.x < 901) {
+					console.log('swim ++')
+					diver.play(animSeq[i+1]);
+				}
+			}
+			else
+			{
+				console.log('everything else ++' + i)
+				diver.play(animSeq[i+1]);
+			}
+
+			
+		}
 
 		if (diver.animations.currentAnim.name=='run')
 		{
@@ -201,11 +218,13 @@ function update()
 		}
 		else if (diver.animations.currentAnim.name=='enterWater')
 		{
-			diver.body.drag.setTo(150, 2500);
+			diver.body.drag.setTo(350, 2500);
 		}
-		else if (diver.animations.currentAnim.name=='swim')
+		else if (diver.animations.currentAnim.name=='swim' || diver.animations.currentAnim.name=='glide')
 		{
-			diver.body.velocity.setTo(-40, 0);
+			diver.body.velocity.setTo(-90, -200);
+			diver.body.drag.setTo(0, 0);
+			//diver.body.acceleration.setTo(0, -100);
 
 		}
 
