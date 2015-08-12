@@ -37,6 +37,8 @@ var bubbles;
 
 var timeUnderwater;
 
+var CustomSpr;
+
         
 
 function create() {
@@ -88,7 +90,11 @@ function create() {
 	diver.animations.add(animSeq[1], [0,1,2,3,4,5], 16, true);
 	diver.animations.add(animSeq[2], [7,8,9,10,11,12,13,14,15,16,17,18], 16, false);
 	diver.animations.add(animSeq[3], [18,19,20,21,22,23,24,25,26,27], 16, false);
-	diver.animations.add(animSeq[4], [28,29,30,31], 16, false);
+	enterWaterAnim = diver.animations.add(animSeq[4], [28,29,30,31], 16, false);
+
+	enterWaterAnim.onComplete.add(moveToNextAnimation, this);
+
+
 	diver.animations.add(animSeq[5], [31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51], 16, true);
 	diver.animations.add(animSeq[6], [44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64], 16, true);
 	diver.animations.add(animSeq[7], [65,66,67,68,69,70,71,72], 16, false);
@@ -101,19 +107,8 @@ function create() {
 	diver.y = -30;
 	diver.body.setSize(48, 48, 40, 50);
 	diver.body.acceleration.y = 980;
-	diver.body.maxVelocity.x = 1500;
-	diver.body.maxVelocity.y = 1500;
-
-
-    //diver.width = 48;
-    //diver.height = 48;
-    //diver.offsetX = 40;
-    //diver.offsetY = 50;
-
-    //new FlxLine(0, 0, new Vector2(0, Globals.diveHeight + Globals.poolDepth),
-    //            new Vector2(9000, Globals.diveHeight + Globals.poolDepth),
-    //            Color.White, 2);
-
+	diver.body.maxVelocity.x = 900;
+	diver.body.maxVelocity.y = 900;
 
     waterLevel = new Phaser.Line(0, diveHeight, 9000, diveHeight);
 
@@ -136,6 +131,15 @@ function create() {
 
 }
 
+function moveToNextAnimation(sprite, animation) 
+{
+	var i = animSeq.indexOf(diver.animations.currentAnim.name);
+	if (i<animSeq.length) {
+		diver.play(animSeq[i+1]);
+	}
+}
+
+
 // render used for debug only.
 function render() {
 
@@ -145,7 +149,6 @@ function render() {
 	
 	game.debug.geom(waterLevel);
     //game.debug.lineInfo(waterLevel, 32, 32);
-
 
 
 }
@@ -227,12 +230,7 @@ function update()
 			//diver.body.acceleration.setTo(0, -100);
 
 		}
-
 	}
-
-	
-	
-
 }
 
 
