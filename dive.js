@@ -32,6 +32,7 @@ var poolDepth = 900;
 
 var divingPlatformWidth = 900;
 var poolSideWidth = 900;
+var skyGap = 270;
 
 // ----------- calculate based on level
 
@@ -101,7 +102,7 @@ function create() {
 	//add pointer for mobile touching.
 	game.input.addPointer();
 
-	divingPlatform = game.add.tileSprite(jumpPoint, 90, divingPlatformWidth, 1800, 'tiles');
+	divingPlatform = game.add.tileSprite(jumpPoint, skyGap, divingPlatformWidth, 1800, 'tiles');
 	game.physics.enable(divingPlatform, Phaser.Physics.ARCADE);
 	divingPlatform.body.immovable = true;
 
@@ -111,7 +112,7 @@ function create() {
 
 	diver = game.add.sprite(0, 0, 'diver');
 	game.physics.enable(diver, Phaser.Physics.ARCADE);
-
+	diver.body.setSize(48, 48, 40, 50);
 	animSeq = ['idle', 
 	'run', 
 	'swan', 
@@ -144,8 +145,8 @@ function create() {
 	
 	diver.play('idle')
 	diver.x = divingPlatform.x + divingPlatform.width - 90;
-	diver.y = -30;
-	diver.body.setSize(48, 48, 40, 50);
+	diver.y = skyGap - 96;
+	
 	diver.body.acceleration.y = GRAVITY;
 	diver.body.maxVelocity.x = 900;
 	diver.body.maxVelocity.y = 900;
@@ -199,10 +200,10 @@ function enableNextAnimation(sprite, animation)
 
 function render() {
 
-	//game.debug.body(diver);
+	game.debug.body(diver);
 	
-	game.debug.text(diver.animations.currentAnim.name + " " + diver.body.velocity.x + " " + diver.body.velocity.y, 10, 10)
-	game.debug.text(diver.x + " " + diver.y + " " + diver.body.touching.down + " Score: " + score, 10, 50)
+	game.debug.text(diver.animations.currentAnim.name + " " + diver.body.velocity.x + " " + diver.body.velocity.y, 10, 10, '#ff0000')
+	game.debug.text(diver.x + " " + diver.y + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000')
 	
 	game.debug.geom(waterLevel);
     //game.debug.lineInfo(waterLevel, 32, 32);
@@ -243,14 +244,20 @@ function update()
 	if (diver.body.y > diveHeight)
 	{
 		timeUnderwater++;
-		
 		//diver.body.velocity.setTo(0, 0);
-		
-
 	}
 	else if (diver.animations.currentAnim.name=='swim' || diver.animations.currentAnim.name=='glide')
 	{
 		diver.body.velocity.y = 0;
+	}
+
+	if (timeUnderwater==1)
+	{
+		var i = animSeq.indexOf(diver.animations.currentAnim.name);
+		if (i<3)
+		{
+			diver.play(animSeq[4]);
+		}
 	}
 
 
@@ -274,8 +281,6 @@ function update()
 				if (canMoveToNextAnimation==true)
 					diver.play(animSeq[i+1]);
 			}
-
-			
 		}
 
 		if (diver.animations.currentAnim.name=='run')
@@ -319,8 +324,11 @@ function update()
 }
 
 function hitSide (obj1, obj2) {
+	console.log('hit side');
 
-	//console.log('hit side');
+	diver.body.setSize(48, 48, 40, 50);
+
+	diver.body.acceleration.x=0;
 	diver.body.acceleration.y=GRAVITY;
 	
 	diver.body.velocity.setTo(2,0);
@@ -330,8 +338,13 @@ function hitSide (obj1, obj2) {
 	
 	bubbles.start(true, 2000, null, 30);
 
+	diver.x += 3;
+
 }
 function hitPlatform (obj1, obj2) {
+	
+	console.log('hit platform');
+
 	if (animSeq.indexOf(diver.animations.currentAnim.name) > 1)
 	{
 		diver.body.setSize(48, 48, 40, 50);
