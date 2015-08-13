@@ -6,7 +6,7 @@ function preload() {
 	game.load.spritesheet('diver', 'diver_05.png', 128, 128);
 	game.load.spritesheet('tiles', 'tile.png', 9,9,9);
 	game.load.spritesheet('bubble', 'bubble.png', 8, 8);
-
+	game.load.spritesheet('cloud', 'cloud.png', 124, 37);
 	
 }
 
@@ -18,6 +18,7 @@ var poolSide;
 var diver;
 var waterLevel;
 var poolBottom;
+var GRAVITY=980;
 
 
 var tweet;
@@ -29,6 +30,9 @@ var diveHeight = 1035;
 var poolWidth = 2700;
 var poolDepth = 900;
 
+var divingPlatformWidth = 900;
+var poolSideWidth = 900;
+
 // ----------- calculate based on level
 
 var jumpPoint;
@@ -39,7 +43,7 @@ var timeUnderwater;
 
 var CustomSpr;
 
-        
+var canMoveToNextAnimation;
 
 function create() {
 	//--TWEET--------------------------------------------------------------------------------------
@@ -50,27 +54,60 @@ function create() {
 	//this.tweetElement.href = this.TWEET_PREAMBLE + this.score + this.TWEET_PROLOGUE;
 	//----------------------------------------------------------------------------------------
 
-	poolSide = game.add.tileSprite(0, diveHeight, 900, 1800, 'tiles');
+	game.stage.backgroundColor = '#0073ef';
+
+	jumpPoint = poolSideWidth + poolWidth;
+
+	for (i = 0; i < 5; i++) { 
+	    cloud = game.add.sprite(jumpPoint + (Math.random() * (divingPlatformWidth)), Math.random() * 125, 'cloud');
+		game.physics.enable(cloud, Phaser.Physics.ARCADE);
+		cloud.body.velocity.x = Math.random() * 15;
+		//cloud.fixedToCamera = true;
+
+		//cloud.scrollFactorX = 0.1;
+		//cloud.scrollFactorY = 0.1;
+		
+	}
+
+	for (i = 0; i < 45; i++) { 
+	    cloud = game.add.sprite((Math.random() * (jumpPoint)), Math.random() * diveHeight, 'cloud');
+		game.physics.enable(cloud, Phaser.Physics.ARCADE);
+		cloud.body.velocity.x = Math.random() * 15;
+		//cloud.fixedToCamera = true;
+		
+		//cloud.scrollFactorX = 0.1;
+		//cloud.scrollFactorY = 0.1;
+
+	}
+
+
+	poolSide = game.add.tileSprite(0, diveHeight, poolSideWidth, 1800, 'tiles');
 	game.physics.enable(poolSide, Phaser.Physics.ARCADE);
 	poolSide.body.immovable = true;
 
-	jumpPoint = poolSide.width + poolWidth;
+	
+
+
 
 
 	poolBottom = game.add.tileSprite(0, diveHeight + poolDepth, poolSide.width + poolWidth + 900, 180, 'tiles');
 	game.physics.enable(poolBottom, Phaser.Physics.ARCADE);
 	poolBottom.body.immovable = true;
 
-	game.stage.backgroundColor = '#0073ef';
+
 
 	score = 0;
 
 	//add pointer for mobile touching.
 	game.input.addPointer();
 
-	divingPlatform = game.add.tileSprite(jumpPoint, 90, 900, 1800, 'tiles');
+	divingPlatform = game.add.tileSprite(jumpPoint, 90, divingPlatformWidth, 1800, 'tiles');
 	game.physics.enable(divingPlatform, Phaser.Physics.ARCADE);
 	divingPlatform.body.immovable = true;
+
+	poolTile = game.add.tileSprite(0, diveHeight, poolSide.width + poolWidth + 900, poolDepth + 9, 'tiles');
+	poolTile.alpha = 0.3225;
+
 
 	diver = game.add.sprite(0, 0, 'diver');
 	game.physics.enable(diver, Phaser.Physics.ARCADE);
@@ -83,12 +120,15 @@ function create() {
 	'glide',
 	'swim',
 	'exitWater',
-	'breathe']
+	'breathe', 'hitFloor']
 
 
 	diver.animations.add(animSeq[0], [81,82], 4, true);
 	diver.animations.add(animSeq[1], [0,1,2,3,4,5], 16, true);
-	diver.animations.add(animSeq[2], [7,8,9,10,11,12,13,14,15,16,17,18], 16, false);
+	
+	swanAnim = diver.animations.add(animSeq[2], [7,8,9,10,11,12,13,14,15,16,17,18], 16, false);
+	swanAnim.onComplete.add(enableNextAnimation, this);
+
 	diver.animations.add(animSeq[3], [18,19,20,21,22,23,24,25,26,27], 16, false);
 	enterWaterAnim = diver.animations.add(animSeq[4], [28,29,30,31], 16, false);
 
@@ -100,13 +140,13 @@ function create() {
 	diver.animations.add(animSeq[7], [65,66,67,68,69,70,71,72], 16, false);
 	diver.animations.add('fall', [7,26], 16, false);
 	diver.animations.add(animSeq[8], [83,84], 2, true);
-	diver.animations.add('hitFloor', [85,86,86,86,87], 16, false);
+	diver.animations.add(animSeq[9], [85,86,86,86,87], 16, false);
 	
 	diver.play('idle')
 	diver.x = divingPlatform.x + divingPlatform.width - 90;
 	diver.y = -30;
 	diver.body.setSize(48, 48, 40, 50);
-	diver.body.acceleration.y = 980;
+	diver.body.acceleration.y = GRAVITY;
 	diver.body.maxVelocity.x = 900;
 	diver.body.maxVelocity.y = 900;
 
@@ -116,8 +156,8 @@ function create() {
 
     bubbles.makeParticles('bubble', [0, 1, 2, 3, 4, 5]);
     bubbles.gravity = -20;
-	bubbles.width=20;
-	bubbles.height=20;
+	bubbles.width=40;
+	bubbles.height=40;
 	bubbles.minRotation = 0;
     bubbles.maxRotation = 0;
 
@@ -128,24 +168,41 @@ function create() {
 
     timeUnderwater=0;
 
+    canMoveToNextAnimation=true;
+
+
+
+
 
 }
 
 function moveToNextAnimation(sprite, animation) 
 {
 	var i = animSeq.indexOf(diver.animations.currentAnim.name);
-	if (i<animSeq.length) {
+	if (i<animSeq.length-1) {
 		diver.play(animSeq[i+1]);
 	}
+	if (diver.animations.currentAnim.name=='glide')
+	{
+		diver.body.drag.setTo(0, 0);
+	}
+
+}
+
+enableNextAnimation
+
+function enableNextAnimation(sprite, animation) 
+{
+	canMoveToNextAnimation=true;
 }
 
 
-// render used for debug only.
 function render() {
 
 	//game.debug.body(diver);
+	
 	game.debug.text(diver.animations.currentAnim.name + " " + diver.body.velocity.x + " " + diver.body.velocity.y, 10, 10)
-	game.debug.text(diver.x + " " + diver.y, 10, 50)
+	game.debug.text(diver.x + " " + diver.y + " " + diver.body.touching.down + " Score: " + score, 10, 50)
 	
 	game.debug.geom(waterLevel);
     //game.debug.lineInfo(waterLevel, 32, 32);
@@ -153,9 +210,22 @@ function render() {
 
 }
 
+function calculateScore() {
+	if (diver.animations.currentAnim.name=='swan')
+	{
+		score++;
+	}
+	tweet = document.getElementById('tweet');
+	tweet.href = TWEET_PREAMBLE + score + TWEET_PROLOGUE;
+
+}
 
 function update() 
 {
+
+	calculateScore();
+
+
 	if (timeUnderwater>1 && timeUnderwater<120)
 	{
 		bubbles.start(true, 2000, null, 2);
@@ -164,8 +234,8 @@ function update()
 	bubbles.x = diver.body.x + diver.body.width/2;
 	bubbles.y = diver.body.y + diver.body.height/2;
 
-	game.physics.arcade.collide(diver, divingPlatform, collisionHandler, null, this);
-	game.physics.arcade.collide(diver, poolSide, collisionHandler, null, this);
+	game.physics.arcade.collide(diver, divingPlatform, hitPlatform, null, this);
+	game.physics.arcade.collide(diver, poolSide, hitSide, null, this);
 	game.physics.arcade.collide(diver, poolBottom, collisionHandler, null, this);
 
 	//find out if diver is underwater
@@ -175,14 +245,14 @@ function update()
 		timeUnderwater++;
 		
 		//diver.body.velocity.setTo(0, 0);
-		diver.body.acceleration.setTo(0, 0);
+		
 
 	}
 	else if (diver.animations.currentAnim.name=='swim' || diver.animations.currentAnim.name=='glide')
 	{
 		diver.body.velocity.y = 0;
-
 	}
+
 
 
 	//if (game.input.mousePointer.isDown || game.input.touch.isDown || game.input.isDown || game.input.pointer1.isDown)
@@ -190,7 +260,7 @@ function update()
 	{
 		var i = animSeq.indexOf(diver.animations.currentAnim.name);
 		
-		if (i<animSeq.length) {
+		if (i<animSeq.length-1) {
 			if (diver.animations.currentAnim.name=='swim') 
 			{
 				if (diver.body.x < 901) {
@@ -201,7 +271,8 @@ function update()
 			else
 			{
 				console.log('everything else ++' + i)
-				diver.play(animSeq[i+1]);
+				if (canMoveToNextAnimation==true)
+					diver.play(animSeq[i+1]);
 			}
 
 			
@@ -212,35 +283,72 @@ function update()
 			// start to run
 			diver.body.acceleration.x += -120;
 		}
-		else if (diver.animations.currentAnim.name=='swan')
+		else if (diver.animations.currentAnim.name=='swan' && diver.body.touching.down )
 		{
 			//jump
+			console.log("jump!");
 			diver.body.velocity.y = -300;
 			diver.body.drag.y = 100;
 
+			diver.body.setSize(48, 30, 40, 50);
+
+			canMoveToNextAnimation=false;
+		}
+		else if (diver.animations.currentAnim.name=='dive')
+		{
+			diver.body.setSize(48, 48, 40, 50);
 		}
 		else if (diver.animations.currentAnim.name=='enterWater')
 		{
-			diver.body.drag.setTo(350, 2500);
+			diver.body.drag.setTo(350, 3500);
+			diver.body.acceleration.setTo(0, 0);
 		}
 		else if (diver.animations.currentAnim.name=='swim' || diver.animations.currentAnim.name=='glide')
 		{
-			diver.body.velocity.setTo(-90, -200);
+			diver.body.velocity.setTo(-90, 0);
 			diver.body.drag.setTo(0, 0);
-			//diver.body.acceleration.setTo(0, -100);
-
+			diver.body.acceleration.setTo(0, -100);
 		}
+		else if (diver.animations.currentAnim.name=='hitFloor' || diver.animations.currentAnim.name=='breathe')
+		{
+			game.state.restart();
+		}
+		
+
 	}
 }
 
+function hitSide (obj1, obj2) {
 
-function collisionHandler (obj1, obj2) {
+	console.log('hit side');
+	diver.body.acceleration.y=GRAVITY;
+	
+	diver.body.velocity.setTo(20,-100);
+	
+	diver.play("hitFloor");
+	diver.body.drag.setTo(0, 0);
+	
+	bubbles.start(true, 2000, null, 30);
 
-    //game.stage.backgroundColor = '#992d2d';
+}
+function hitPlatform (obj1, obj2) {
+	if (animSeq.indexOf(diver.animations.currentAnim.name) > 1)
+	{
+		diver.body.setSize(48, 48, 40, 50);
+		diver.y -= 18;
+		diver.play("hitFloor");
+		diver.body.velocity.x=0;
+		diver.body.velocity.y=0;
+		diver.body.acceleration.x=0;
+		diver.body.acceleration.y=GRAVITY;
+			
+	}
 
 }
 
+function collisionHandler (obj1, obj2) {
 
+}
 
 function submitHighScore () {
 
