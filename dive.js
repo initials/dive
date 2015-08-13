@@ -320,13 +320,13 @@ function update()
 
 function hitSide (obj1, obj2) {
 
-	console.log('hit side');
+	//console.log('hit side');
 	diver.body.acceleration.y=GRAVITY;
 	
-	diver.body.velocity.setTo(20,-100);
+	diver.body.velocity.setTo(2,0);
 	
 	diver.play("hitFloor");
-	diver.body.drag.setTo(0, 0);
+	diver.body.drag.setTo(1, 0);
 	
 	bubbles.start(true, 2000, null, 30);
 
@@ -340,7 +340,7 @@ function hitPlatform (obj1, obj2) {
 		diver.body.velocity.x=0;
 		diver.body.velocity.y=0;
 		diver.body.acceleration.x=0;
-		diver.body.acceleration.y=GRAVITY;
+		diver.body.acceleration.y=0;
 			
 	}
 
