@@ -5,9 +5,13 @@ function preload() {
 
 	game.load.spritesheet('diver', 'diver_05.png', 128, 128);
 	game.load.spritesheet('tiles', 'tile.png', 9,9,9);
+	game.load.spritesheet('tiles_90x90', 'tile_90x90.png', 90,90,90);
+	
 	game.load.spritesheet('bubble', 'bubble.png', 8, 8);
 	game.load.spritesheet('cloud', 'clouds.png', 124, 37);
 	game.load.spritesheet('splash', 'splash.png', 37, 20);
+	game.load.image('bubbleFont', 'font.png');
+
 	
 	
 }
@@ -49,6 +53,8 @@ var CustomSpr;
 
 var canMoveToNextAnimation;
 
+var bubbleText;
+
 function create() {
 	//--TWEET--------------------------------------------------------------------------------------
 	tweet = document.getElementById('tweet');
@@ -76,7 +82,7 @@ function create() {
 	}
 
 	for (i = 0; i < 45; i++) { 
-	    cloud = game.add.sprite((Math.random() * (jumpPoint)), Math.random() * diveHeight, 'cloud');
+	    cloud = game.add.sprite((Math.random() * (jumpPoint)), Math.random() * (diveHeight - cloud.height), 'cloud');
 		game.physics.enable(cloud, Phaser.Physics.ARCADE);
 		cloud.body.velocity.x = Math.random() * 15;
 		//cloud.fixedToCamera = true;
@@ -87,6 +93,10 @@ function create() {
 		cloud.animations.frame = Math.floor(Math.random() * 10);
 
 	}
+
+
+	poolTile = game.add.tileSprite(0, diveHeight, poolSideWidth + poolWidth + 900, poolDepth + 9, 'tiles_90x90');
+	poolTile.alpha = 0.3225;
 
 	poolSide = game.add.tileSprite(0, diveHeight, poolSideWidth, 1800, 'tiles');
 	game.physics.enable(poolSide, Phaser.Physics.ARCADE);
@@ -105,13 +115,11 @@ function create() {
 	game.physics.enable(divingPlatform, Phaser.Physics.ARCADE);
 	divingPlatform.body.immovable = true;
 
-	poolTile = game.add.tileSprite(0, diveHeight, poolSide.width + poolWidth + 900, poolDepth + 9, 'tiles');
-	poolTile.alpha = 0.3225;
-
 
 	diver = game.add.sprite(0, 0, 'diver');
 	game.physics.enable(diver, Phaser.Physics.ARCADE);
 	diver.body.setSize(48, 48, 40, 50);
+	
 	animSeq = ['idle', 
 	'run', 
 	'swan', 
@@ -124,8 +132,12 @@ function create() {
 
 
 	diver.animations.add(animSeq[0], [81,82], 4, true);
-	diver.animations.add(animSeq[1], [0,1,2,3,4,5], 16, true);
-	
+	runAnim = diver.animations.add(animSeq[1], [0,1,2,3,4,5], 8, true);
+	runAnim.onComplete.add(runFaster, this);
+
+	diver.animations.add(animSeq[1] + "Faster", [0,1,2,3,4,5], 16, true);
+
+
 	swanAnim = diver.animations.add(animSeq[2], [7,8,9,10,11,12,13,14,15,16,17,18], 16, false);
 	swanAnim.onComplete.add(enableNextAnimation, this);
 
@@ -155,6 +167,7 @@ function create() {
 
     waterLevel = new Phaser.Line(0, diveHeight, 9000, diveHeight);
 
+
 	bubbles = game.add.emitter(0, 0, 100);
 
     bubbles.makeParticles('bubble', [0, 1, 2, 3, 4, 5]);
@@ -179,7 +192,13 @@ function create() {
 
 	splashSprite = game.add.sprite(-100, -100, 'splash');
 
-
+/*
+	bubbleText = game.add.retroFont('bubbleFont', 16, 16, Phaser.RetroFont.TEXT_SET1);
+	bubbleText.text = "Perfect Entry!";
+    bubbleText.align = Phaser.RetroFont.ALIGN_CENTER;
+    bubbleText.multiLine = true;
+    bubbleText.autoUpperCase = false;
+*/
 }
 
 function moveToNextAnimation(sprite, animation) 
@@ -200,20 +219,22 @@ function moveToNextAnimation(sprite, animation)
 
 }
 
-enableNextAnimation
-
 function enableNextAnimation(sprite, animation) 
 {
 	canMoveToNextAnimation=true;
 }
 
+function runFaster(sprite, animation) 
+{
+	diver.animations.currentAnim.speed=16;
+}
 
 function render() {
 	/*
 	game.debug.body(diver);
 	game.debug.spriteInfo(diver, 0, 100);
 	game.debug.spriteBounds(diver);
-	*/
+	
 
 	
 	game.debug.text(diver.animations.currentAnim.name + " v.x:" + Math.floor(diver.body.velocity.x) + 
@@ -222,11 +243,13 @@ function render() {
 		" d.y:" + Math.floor(diver.body.drag.y), 10, 10, '#ff0000');
 
 	game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000');
-	
-	game.debug.geom(waterLevel);
+	*/
+
+	game.debug.geom(waterLevel, '#ffffff');
     //game.debug.lineInfo(waterLevel, 32, 32);
+	game.debug.text(" Score: " + score, 15, 15, '#ffffff');
 
-
+	game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000');
 }
 
 function calculateScore() {
@@ -255,7 +278,7 @@ function update()
 
 	game.physics.arcade.collide(diver, divingPlatform, hitPlatform, null, this);
 	game.physics.arcade.collide(diver, poolSide, hitSide, null, this);
-	game.physics.arcade.collide(diver, poolBottom, collisionHandler, null, this);
+	game.physics.arcade.collide(diver, poolBottom, hitBottomOfPool, null, this);
 
 	game.physics.arcade.collide(bubbles, poolSide, killParticle, null, this);
 
@@ -382,7 +405,7 @@ function hitSide (obj1, obj2) {
 
 	// first check to see if diver can climb out of water.
 	console.log('hit side diver.x:' + diver.x + ' diver.y:'+diver.y);
-	if (diver.body.x < 901) {
+	if (diver.body.y < diveHeight - diver.body.height/2) {
 		diver.play('exitWater');
 		diver.y = diveHeight-72 ;
 	}
@@ -424,7 +447,16 @@ function hitPlatform (obj1, obj2) {
 
 }
 
-function collisionHandler (obj1, obj2) {
+function hitBottomOfPool (obj1, obj2) {
+	diver.body.setSize(48, 48, 40, 50);
+
+	diver.body.acceleration.x=0;
+	diver.body.acceleration.y=GRAVITY;
+	diver.body.velocity.x=0;
+	diver.body.velocity.y=0;
+	diver.play("hitFloor");
+	
+	bubbles.start(true, 2000, null, 30);
 
 }
 
