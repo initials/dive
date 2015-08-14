@@ -55,7 +55,12 @@ var canMoveToNextAnimation;
 
 var bubbleText;
 
+var level;
+
 function create() {
+
+	level = localStorage.getItem('level');
+	
 	//--TWEET--------------------------------------------------------------------------------------
 	tweet = document.getElementById('tweet');
 	//alert(tweet.href);
@@ -230,12 +235,12 @@ function runFaster(sprite, animation)
 }
 
 function render() {
+	game.debug.geom(waterLevel, '#ffffff');
+
 	/*
 	game.debug.body(diver);
 	game.debug.spriteInfo(diver, 0, 100);
 	game.debug.spriteBounds(diver);
-	*/
-
 	
 	game.debug.text(diver.animations.currentAnim.name + " v.x:" + Math.floor(diver.body.velocity.x) + 
 		" v.y:" + Math.floor(diver.body.velocity.y) + " a.x:" + Math.floor(diver.body.acceleration.x) + 
@@ -244,12 +249,10 @@ function render() {
 
 	game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000');
 	
-
-	game.debug.geom(waterLevel, '#ffffff');
-    //game.debug.lineInfo(waterLevel, 32, 32);
-	game.debug.text(" Score: " + score, 15, 15, '#ffffff');
+	game.debug.text(" Score: " + score + " Level:" + level, 15, 15, '#ffffff');
 
 	game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000');
+	*/
 }
 
 function calculateScore() {
@@ -268,7 +271,7 @@ function update()
 	calculateScore();
 
 
-	if (timeUnderwater>1 && timeUnderwater<120)
+	if (timeUnderwater>1 && timeUnderwater<40)
 	{
 		bubbles.start(true, 2000, null, 2);
 	}
@@ -394,6 +397,10 @@ function update()
 		}
 		else if (diver.animations.currentAnim.name=='hitFloor' || diver.animations.currentAnim.name=='breathe')
 		{
+			level = localStorage.getItem('level');
+			level++;
+			localStorage.setItem('level', level);
+
 			game.state.restart();
 		}
 		
@@ -461,7 +468,7 @@ function hitBottomOfPool (obj1, obj2) {
 		diver.body.velocity.x=0;
 		diver.body.velocity.y=0;
 		
-		bubbles.start(true, 2000, null, 30);
+		bubbles.start(true, -1, null, 30);
 	}
 	
 	
