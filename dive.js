@@ -210,7 +210,7 @@ function render() {
 	game.debug.body(diver);
 	
 	game.debug.text(diver.animations.currentAnim.name + " " + diver.body.velocity.x + " " + diver.body.velocity.y, 10, 10, '#ff0000')
-	game.debug.text(diver.x + " " + diver.y + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000')
+	game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000')
 	
 	game.debug.geom(waterLevel);
     //game.debug.lineInfo(waterLevel, 32, 32);
@@ -264,6 +264,13 @@ function update()
 
 	if (timeUnderwater==1)
 	{
+		console.log('!-- Has entered Water --!\nCurrent Anim: ' + diver.animations.currentAnim.name + ' Frame: ' + diver.animations.currentAnim.frame );
+
+		if (diver.animations.currentAnim.name=='dive')
+		{
+			
+		}
+
 		var i = animSeq.indexOf(diver.animations.currentAnim.name);
 		if (i<3)
 		{
@@ -373,10 +380,10 @@ function collisionHandler (obj1, obj2) {
 }
 
 function killParticle (obj1, obj2) {
-	console.log("kill particle");
+	//console.log("kill particle");
 	//obj2.kill();
 	//obj2.scale = 5;
-	obj2.tint = Math.random() * 0xffffff;
+	//obj2.tint = Math.random() * 0xffffff;
 	//obj1.tint = Math.random() * 0xffffff;
 }
 
