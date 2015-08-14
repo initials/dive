@@ -266,9 +266,10 @@ function update()
 	{
 		console.log('!-- Has entered Water --!\nCurrent Anim: ' + diver.animations.currentAnim.name + ' Frame: ' + diver.animations.currentAnim.frame );
 
-		if (diver.animations.currentAnim.name=='dive')
+		if (diver.animations.currentAnim.name=='dive' && diver.animations.currentAnim.frame == 27)
 		{
-			
+			score+=100;
+			console.log('Perfect Entry');
 		}
 
 		var i = animSeq.indexOf(diver.animations.currentAnim.name);
@@ -395,16 +396,6 @@ function submitHighScore () {
 }
 
 function listener () {
-	// if (!chickenFeed.animations.getAnimation("feed").isPlaying) {
-	// 	timesFed += 1;
-	// }
-	// chickenFeed.animations.play('feed', 12, false);
-	// if (timesFed==2) s.setText("Achievement Earned: Fed chickens twice");
-	// else if (timesFed==5) s.setText("Achievement Earned: Farmer In Training - Fed chickens five times");
-	// else if (timesFed==10) s.setText("Achievement Earned: Semi-pro farmer - Fed chickens ten times");
-	// else if (timesFed==50) s.setText("Achievement Earned: Pro Farmer - Fed chickens fifty times");	
-	// else if (timesFed==100) s.setText("Achievement Earned: Serious Business - Fed chickens one hundred times");
-	// else s.setText("");	
 }
 
 	
