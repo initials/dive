@@ -6,7 +6,7 @@ function preload() {
 	game.load.spritesheet('diver', 'diver_05.png', 128, 128);
 	game.load.spritesheet('tiles', 'tile.png', 9,9,9);
 	game.load.spritesheet('bubble', 'bubble.png', 8, 8);
-	game.load.spritesheet('cloud', 'cloud.png', 124, 37);
+	game.load.spritesheet('cloud', 'clouds.png', 124, 37);
 	
 }
 
@@ -59,7 +59,7 @@ function create() {
 
 	jumpPoint = poolSideWidth + poolWidth;
 
-	for (i = 0; i < 5; i++) { 
+	for (i = 0; i < 7; i++) { 
 	    cloud = game.add.sprite(jumpPoint + (Math.random() * (divingPlatformWidth)), Math.random() * 125, 'cloud');
 		game.physics.enable(cloud, Phaser.Physics.ARCADE);
 		cloud.body.velocity.x = Math.random() * 15;
@@ -67,6 +67,8 @@ function create() {
 
 		//cloud.scrollFactorX = 0.1;
 		//cloud.scrollFactorY = 0.1;
+
+		cloud.animations.frame = Math.floor(Math.random() * 10);
 		
 	}
 
@@ -78,6 +80,8 @@ function create() {
 		
 		//cloud.scrollFactorX = 0.1;
 		//cloud.scrollFactorY = 0.1;
+
+		cloud.animations.frame = Math.floor(Math.random() * 10);
 
 	}
 
@@ -161,6 +165,9 @@ function create() {
 	bubbles.height=40;
 	bubbles.minRotation = 0;
     bubbles.maxRotation = 0;
+	bubbles.setXSpeed(-200, 200);
+    bubbles.setYSpeed(-15, -55);
+
 
     game.input.justPressedRate = 25;
 	
@@ -239,6 +246,10 @@ function update()
 	game.physics.arcade.collide(diver, poolSide, hitSide, null, this);
 	game.physics.arcade.collide(diver, poolBottom, collisionHandler, null, this);
 
+	//game.physics.arcade.collide(bubbles, poolSide, killParticle, null, this);
+
+	bubbles.forEachAlive(setParticleXSpeed, this);
+
 	//find out if diver is underwater
 
 	if (diver.body.y > diveHeight)
@@ -259,8 +270,6 @@ function update()
 			diver.play(animSeq[4]);
 		}
 	}
-
-
 
 	//if (game.input.mousePointer.isDown || game.input.touch.isDown || game.input.isDown || game.input.pointer1.isDown)
 	if (game.input.mousePointer.justPressed())
@@ -362,6 +371,15 @@ function hitPlatform (obj1, obj2) {
 function collisionHandler (obj1, obj2) {
 
 }
+
+function setParticleXSpeed(particle, max) {
+
+    particle.tint = Math.random() * 0xffffff;
+    
+
+}
+
+
 
 function submitHighScore () {
 
