@@ -176,7 +176,7 @@ function create() {
 	bubbles.height=40;
 	bubbles.minRotation = 0;
     bubbles.maxRotation = 0;
-	bubbles.setXSpeed(-200, 200);
+	bubbles.setXSpeed(-20, 20);
     bubbles.setYSpeed(-15, -55);
 
 
@@ -234,7 +234,7 @@ function render() {
 	game.debug.body(diver);
 	game.debug.spriteInfo(diver, 0, 100);
 	game.debug.spriteBounds(diver);
-	
+	*/
 
 	
 	game.debug.text(diver.animations.currentAnim.name + " v.x:" + Math.floor(diver.body.velocity.x) + 
@@ -243,7 +243,7 @@ function render() {
 		" d.y:" + Math.floor(diver.body.drag.y), 10, 10, '#ff0000');
 
 	game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000');
-	*/
+	
 
 	game.debug.geom(waterLevel, '#ffffff');
     //game.debug.lineInfo(waterLevel, 32, 32);
@@ -411,24 +411,25 @@ function hitSide (obj1, obj2) {
 	}
 	else
 	{
-		diver.body.setSize(48, 48, 40, 50);
+		if (diver.animations.currentAnim.name!='hitFloor' )
+		{
+			diver.body.setSize(48, 48, 40, 50);
 
-		diver.body.acceleration.x=0;
-		diver.body.acceleration.y=GRAVITY;
-		
-		diver.body.velocity.setTo(2,0);
-		
-		diver.play("hitFloor");
-		diver.body.drag.setTo(1, 0);
-		
-		bubbles.start(true, 2000, null, 30);
+			diver.body.acceleration.x=0;
+			diver.body.acceleration.y=GRAVITY;
+			
+			diver.body.velocity.setTo(2,0);
+			
+			diver.play("hitFloor");
+			diver.body.drag.setTo(1, 0);
+			
+			bubbles.start(true, 2000, null, 30);
 
-		diver.x += 3;
+			diver.x += 3;
+		}
 	}
-
-
-
 }
+
 function hitPlatform (obj1, obj2) {
 	
 	//console.log('hit platform');
@@ -448,16 +449,22 @@ function hitPlatform (obj1, obj2) {
 }
 
 function hitBottomOfPool (obj1, obj2) {
-	diver.body.setSize(48, 48, 40, 50);
 
-	diver.body.acceleration.x=0;
-	diver.body.acceleration.y=GRAVITY;
-	diver.body.velocity.x=0;
-	diver.body.velocity.y=0;
-	diver.play("hitFloor");
+	if (diver.animations.currentAnim.name!='hitFloor' )
+	{
+		diver.play("hitFloor");
+		
+		diver.body.setSize(48, 48, 40, 50);
+
+		diver.body.acceleration.x=0;
+		diver.body.acceleration.y=GRAVITY;
+		diver.body.velocity.x=0;
+		diver.body.velocity.y=0;
+		
+		bubbles.start(true, 2000, null, 30);
+	}
 	
-	bubbles.start(true, 2000, null, 30);
-
+	
 }
 
 function killParticle (obj1, obj2) {
