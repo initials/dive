@@ -246,9 +246,9 @@ function update()
 	game.physics.arcade.collide(diver, poolSide, hitSide, null, this);
 	game.physics.arcade.collide(diver, poolBottom, collisionHandler, null, this);
 
-	//game.physics.arcade.collide(bubbles, poolSide, killParticle, null, this);
+	game.physics.arcade.collide(bubbles, poolSide, killParticle, null, this);
 
-	bubbles.forEachAlive(setParticleXSpeed, this);
+	//bubbles.forEachAlive(checkCollision, this);
 
 	//find out if diver is underwater
 
@@ -372,11 +372,12 @@ function collisionHandler (obj1, obj2) {
 
 }
 
-function setParticleXSpeed(particle, max) {
-
-    particle.tint = Math.random() * 0xffffff;
-    
-
+function killParticle (obj1, obj2) {
+	console.log("kill particle");
+	//obj2.kill();
+	//obj2.scale = 5;
+	obj2.tint = Math.random() * 0xffffff;
+	//obj1.tint = Math.random() * 0xffffff;
 }
 
 
