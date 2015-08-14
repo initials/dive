@@ -137,7 +137,10 @@ function create() {
 
 	diver.animations.add(animSeq[5], [31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51], 16, true);
 	diver.animations.add(animSeq[6], [44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64], 16, true);
-	diver.animations.add(animSeq[7], [65,66,67,68,69,70,71,72], 16, false);
+
+	exitWaterAnim = diver.animations.add(animSeq[7], [65,66,67,68,69,70,71,72], 16, false);
+	exitWaterAnim.onComplete.add(moveToNextAnimation, this);
+
 	diver.animations.add('fall', [7,26], 16, false);
 	diver.animations.add(animSeq[8], [83,84], 2, true);
 	diver.animations.add(animSeq[9], [85,86,86,86,87], 16, false);
@@ -189,6 +192,11 @@ function moveToNextAnimation(sprite, animation)
 	{
 		diver.body.drag.setTo(0, 0);
 	}
+	else if (diver.animations.currentAnim.name=='breathe')
+	{
+		diver.y = diveHeight-72 ;
+
+	}
 
 }
 
@@ -201,11 +209,19 @@ function enableNextAnimation(sprite, animation)
 
 
 function render() {
-
+	/*
 	game.debug.body(diver);
+	game.debug.spriteInfo(diver, 0, 100);
+	game.debug.spriteBounds(diver);
+	*/
+
 	
-	game.debug.text(diver.animations.currentAnim.name + " " + diver.body.velocity.x + " " + diver.body.velocity.y, 10, 10, '#ff0000')
-	game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000')
+	game.debug.text(diver.animations.currentAnim.name + " v.x:" + Math.floor(diver.body.velocity.x) + 
+		" v.y:" + Math.floor(diver.body.velocity.y) + " a.x:" + Math.floor(diver.body.acceleration.x) + 
+		" a.y:" + Math.floor(diver.body.acceleration.y) + " d.x:" + Math.floor(diver.body.drag.x) + 
+		" d.y:" + Math.floor(diver.body.drag.y), 10, 10, '#ff0000');
+
+	game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000');
 	
 	game.debug.geom(waterLevel);
     //game.debug.lineInfo(waterLevel, 32, 32);
@@ -247,7 +263,7 @@ function update()
 
 	//find out if diver is underwater
 
-	if (diver.body.y > diveHeight)
+	if (diver.body.y > diveHeight - diver.body.height/2)
 	{
 		timeUnderwater++;
 		//diver.body.velocity.setTo(0, 0);
@@ -255,6 +271,15 @@ function update()
 	else if (diver.animations.currentAnim.name=='swim' || diver.animations.currentAnim.name=='glide')
 	{
 		diver.body.velocity.y = 0;
+		diver.body.acceleration.setTo(0, 0);
+
+		if (game.input.mousePointer.justPressed())
+		{
+			console.log('swimswim')
+			diver.body.acceleration.setTo(-1140, 0);
+			diver.body.drag.setTo(125, 125);
+		}
+
 	}
 	if (splashSprite.alpha>0.09)
 		splashSprite.alpha -= 0.0251;
@@ -297,6 +322,14 @@ function update()
 					diver.play(animSeq[i+1]);
 				}
 			}
+			else if (diver.animations.currentAnim.name=='dive')
+			{
+				if (timeUnderwater>1)
+				{
+					console.log('dive ++')
+					diver.play(animSeq[i+1]);
+				}
+			} 
 			else
 			{
 				console.log('everything else ++' + i)
@@ -327,12 +360,12 @@ function update()
 		}
 		else if (diver.animations.currentAnim.name=='enterWater')
 		{
-			diver.body.drag.setTo(350, 3500);
+			diver.body.drag.setTo(2350, 3500);
 			diver.body.acceleration.setTo(0, 0);
 		}
 		else if (diver.animations.currentAnim.name=='swim' || diver.animations.currentAnim.name=='glide')
 		{
-			diver.body.velocity.setTo(-90, 0);
+			diver.body.velocity.y = 0;
 			diver.body.drag.setTo(0, 0);
 			diver.body.acceleration.setTo(0, -100);
 		}
@@ -346,26 +379,36 @@ function update()
 }
 
 function hitSide (obj1, obj2) {
-	console.log('hit side');
 
-	diver.body.setSize(48, 48, 40, 50);
+	// first check to see if diver can climb out of water.
+	console.log('hit side diver.x:' + diver.x + ' diver.y:'+diver.y);
+	if (diver.body.x < 901) {
+		diver.play('exitWater');
+		diver.y = diveHeight-72 ;
+	}
+	else
+	{
+		diver.body.setSize(48, 48, 40, 50);
 
-	diver.body.acceleration.x=0;
-	diver.body.acceleration.y=GRAVITY;
-	
-	diver.body.velocity.setTo(2,0);
-	
-	diver.play("hitFloor");
-	diver.body.drag.setTo(1, 0);
-	
-	bubbles.start(true, 2000, null, 30);
+		diver.body.acceleration.x=0;
+		diver.body.acceleration.y=GRAVITY;
+		
+		diver.body.velocity.setTo(2,0);
+		
+		diver.play("hitFloor");
+		diver.body.drag.setTo(1, 0);
+		
+		bubbles.start(true, 2000, null, 30);
 
-	diver.x += 3;
+		diver.x += 3;
+	}
+
+
 
 }
 function hitPlatform (obj1, obj2) {
 	
-	console.log('hit platform');
+	//console.log('hit platform');
 
 	if (animSeq.indexOf(diver.animations.currentAnim.name) > 1)
 	{
