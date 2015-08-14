@@ -7,6 +7,8 @@ function preload() {
 	game.load.spritesheet('tiles', 'tile.png', 9,9,9);
 	game.load.spritesheet('bubble', 'bubble.png', 8, 8);
 	game.load.spritesheet('cloud', 'clouds.png', 124, 37);
+	game.load.spritesheet('splash', 'splash.png', 37, 20);
+	
 	
 }
 
@@ -19,6 +21,7 @@ var diver;
 var waterLevel;
 var poolBottom;
 var GRAVITY=980;
+var splashSprite;
 
 
 var tweet;
@@ -85,21 +88,13 @@ function create() {
 
 	}
 
-
 	poolSide = game.add.tileSprite(0, diveHeight, poolSideWidth, 1800, 'tiles');
 	game.physics.enable(poolSide, Phaser.Physics.ARCADE);
 	poolSide.body.immovable = true;
 
-	
-
-
-
-
 	poolBottom = game.add.tileSprite(0, diveHeight + poolDepth, poolSide.width + poolWidth + 900, 180, 'tiles');
 	game.physics.enable(poolBottom, Phaser.Physics.ARCADE);
 	poolBottom.body.immovable = true;
-
-
 
 	score = 0;
 
@@ -179,7 +174,7 @@ function create() {
     canMoveToNextAnimation=true;
 
 
-
+	splashSprite = game.add.sprite(-100, -100, 'splash');
 
 
 }
@@ -261,9 +256,19 @@ function update()
 	{
 		diver.body.velocity.y = 0;
 	}
+	if (splashSprite.alpha>0.09)
+		splashSprite.alpha -= 0.0251;
 
 	if (timeUnderwater==1)
 	{
+		//game.time.advancedTiming = true;
+    	//game.time.desiredFps = 20;
+    	//game.time.slowMotion = 3.0;
+
+		splashSprite.x = diver.body.x;
+		splashSprite.y = waterLevel.y - splashSprite.height;
+		splashSprite.alpha = 1.0;
+
 		console.log('!-- Has entered Water --!\nCurrent Anim: ' + diver.animations.currentAnim.name + ' Frame: ' + diver.animations.currentAnim.frame );
 
 		if (diver.animations.currentAnim.name=='dive' && diver.animations.currentAnim.frame == 27)
