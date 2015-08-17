@@ -77,11 +77,6 @@ function create() {
 	    cloud = game.add.sprite(jumpPoint + (Math.random() * (divingPlatformWidth)), Math.random() * 125, 'cloud');
 		game.physics.enable(cloud, Phaser.Physics.ARCADE);
 		cloud.body.velocity.x = Math.random() * 15;
-		//cloud.fixedToCamera = true;
-
-		//cloud.scrollFactorX = 0.1;
-		//cloud.scrollFactorY = 0.1;
-
 		cloud.animations.frame = Math.floor(Math.random() * 10);
 		
 	}
@@ -90,11 +85,6 @@ function create() {
 	    cloud = game.add.sprite((Math.random() * (jumpPoint)), Math.random() * (diveHeight - cloud.height), 'cloud');
 		game.physics.enable(cloud, Phaser.Physics.ARCADE);
 		cloud.body.velocity.x = Math.random() * 15;
-		//cloud.fixedToCamera = true;
-		
-		//cloud.scrollFactorX = 0.1;
-		//cloud.scrollFactorY = 0.1;
-
 		cloud.animations.frame = Math.floor(Math.random() * 10);
 
 	}
