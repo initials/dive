@@ -57,6 +57,8 @@ var bubbleText;
 
 var level;
 
+var DEBUG_MODE = true;
+
 function create() {
 
 	level = localStorage.getItem('level');
@@ -227,22 +229,26 @@ function runFaster(sprite, animation)
 function render() {
 	game.debug.geom(waterLevel, '#ffffff');
 
-	/*
-	game.debug.body(diver);
-	game.debug.spriteInfo(diver, 0, 100);
-	game.debug.spriteBounds(diver);
-	
-	game.debug.text(diver.animations.currentAnim.name + " v.x:" + Math.floor(diver.body.velocity.x) + 
-		" v.y:" + Math.floor(diver.body.velocity.y) + " a.x:" + Math.floor(diver.body.acceleration.x) + 
-		" a.y:" + Math.floor(diver.body.acceleration.y) + " d.x:" + Math.floor(diver.body.drag.x) + 
-		" d.y:" + Math.floor(diver.body.drag.y), 10, 10, '#ff0000');
+	if (DEBUG_MODE==true)
+	{
+		game.debug.body(diver);
+		game.debug.spriteInfo(diver, 0, 100);
+		game.debug.spriteBounds(diver);
+		
+		game.debug.text(diver.animations.currentAnim.name + " v.x:" + Math.floor(diver.body.velocity.x) + 
+			" v.y:" + Math.floor(diver.body.velocity.y) + " a.x:" + Math.floor(diver.body.acceleration.x) + 
+			" a.y:" + Math.floor(diver.body.acceleration.y) + " d.x:" + Math.floor(diver.body.drag.x) + 
+			" d.y:" + Math.floor(diver.body.drag.y), 10, 10, '#ff0000');
 
-	game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000');
-	
-	game.debug.text(" Score: " + score + " Level:" + level, 15, 15, '#ffffff');
+		game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000');
+		
+		game.debug.text(" Score: " + score + " Level:" + level, 15, 15, '#ffffff');
 
-	game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000');
-	*/
+		game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000');
+		
+	}
+	
+	
 }
 
 function calculateScore() {
