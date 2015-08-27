@@ -10,11 +10,17 @@ function preload() {
 	game.load.spritesheet('bubble', 'bubble.png', 8, 8);
 	game.load.spritesheet('cloud', 'clouds.png', 124, 37);
 	game.load.spritesheet('splash', 'splash.png', 37, 20);
-	game.load.image('bubbleFont', 'font.png');
+	
+	game.load.spritesheet('bubbleFont', 'font.png', 16,16);
 
 	
 	
 }
+
+//-----------------------------
+var DEBUG_MODE = false;
+//-----------------------------
+
 
 var score = 0;
 
@@ -46,6 +52,7 @@ var skyGap = 270;
 var jumpPoint;
 
 var bubbles;
+var multipliers;
 
 var timeUnderwater;
 
@@ -54,14 +61,26 @@ var CustomSpr;
 var canMoveToNextAnimation;
 
 var bubbleText;
+var levelText;
+
 
 var level;
-
-var DEBUG_MODE = true;
+var levelTextBubbleLetters;
 
 function create() {
 
+	//uncomment to restart
+	//localStorage.removeItem('level');
+
 	level = localStorage.getItem('level');
+
+	if (level==null)
+	{
+		level=1;
+		localStorage.setItem('level', level);
+	}
+
+	console.log('level: '+level)
 	
 	//--TWEET--------------------------------------------------------------------------------------
 	tweet = document.getElementById('tweet');
@@ -115,7 +134,7 @@ function create() {
 
 	diver = game.add.sprite(0, 0, 'diver');
 	game.physics.enable(diver, Phaser.Physics.ARCADE);
-	diver.body.setSize(48, 48, 40, 50);
+	diver.body.setSize(48, 48, 40, 48);
 	
 	animSeq = ['idle', 
 	'run', 
@@ -177,6 +196,20 @@ function create() {
     bubbles.setYSpeed(-15, -55);
 
 
+
+
+	multipliers = game.add.emitter(0, 0, 100);
+
+    multipliers.makeParticles('bubbleFont', [17,18,19,20,21]);
+    multipliers.gravity = -20;
+	multipliers.width=1;
+	multipliers.height=1;
+	multipliers.minRotation = 0;
+    multipliers.maxRotation = 0;
+	multipliers.setXSpeed(-20, 20);
+    multipliers.setYSpeed(-105, 5);    
+
+
     game.input.justPressedRate = 25;
 	
 	game.world.setBounds(0, 0, poolSide.width + poolWidth + divingPlatform.width, 9000);
@@ -196,6 +229,34 @@ function create() {
     bubbleText.multiLine = true;
     bubbleText.autoUpperCase = false;
 */
+
+	var textStringForLevelStart = [44, 37, 54, 37, 44];
+
+	var n = level.toString();
+	var res = n.split("");
+	console.log(res);
+	
+	levelTextBubbleLetters = game.add.group();
+
+
+	for (var i = 0; i < 8; i++)
+    {
+        //  Note: alphaIncSpeed is a new property we're adding to Phaser.Sprite, not a pre-existing one
+        levelText = levelTextBubbleLetters.create(150 + (i*20), 30, 'bubbleFont');
+        levelText.fixedToCamera = true;
+        game.physics.enable(levelText, Phaser.Physics.ARCADE);
+
+        levelText.frame = textStringForLevelStart[i];
+        if (i>5)
+        {
+        	var j = parseInt(n[i-6]);
+        	console.log(j);
+        	levelText.frame = 16+j;
+        }
+
+
+    }
+
 }
 
 function moveToNextAnimation(sprite, animation) 
@@ -227,7 +288,11 @@ function runFaster(sprite, animation)
 }
 
 function render() {
+	
 	game.debug.geom(waterLevel, '#ffffff');
+
+	game.debug.text(" Score: " + score + " Level:" + level, 15, 15, '#ffffff');
+
 
 	if (DEBUG_MODE==true)
 	{
@@ -241,9 +306,6 @@ function render() {
 			" d.y:" + Math.floor(diver.body.drag.y), 10, 10, '#ff0000');
 
 		game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000');
-		
-		game.debug.text(" Score: " + score + " Level:" + level, 15, 15, '#ffffff');
-
 		game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000');
 		
 	}
@@ -274,6 +336,11 @@ function update()
 
 	bubbles.x = diver.body.x + diver.body.width/2;
 	bubbles.y = diver.body.y + diver.body.height/2;
+
+
+	multipliers.x = diver.body.x + diver.body.width/2;
+	multipliers.y = diver.body.y ;
+
 
 	game.physics.arcade.collide(diver, divingPlatform, hitPlatform, null, this);
 	game.physics.arcade.collide(diver, poolSide, hitSide, null, this);
@@ -362,6 +429,12 @@ function update()
 
 		if (diver.animations.currentAnim.name=='run')
 		{
+			levelTextBubbleLetters.forEach(function(item) {
+				item.fixedToCamera = false;
+		        item.alpha = 0.5;
+		        
+		    });
+
 			// start to run
 			diver.body.acceleration.x += -120;
 		}
@@ -375,6 +448,10 @@ function update()
 			diver.body.setSize(48, 30, 40, 50);
 
 			canMoveToNextAnimation=false;
+
+			
+			
+
 		}
 		else if (diver.animations.currentAnim.name=='dive')
 		{
@@ -396,6 +473,7 @@ function update()
 			level = localStorage.getItem('level');
 			level++;
 			localStorage.setItem('level', level);
+
 
 			game.state.restart();
 		}
