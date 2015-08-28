@@ -88,6 +88,15 @@ function create() {
 	//localStorage.removeItem('level');
 	//localStorage.removeItem('score');
 
+	if (level<4)
+	{
+		diveHeight = 1035 + (Math.random() * level * 50); 
+		poolWidth = 2700 + (Math.random() * level * 50);
+		poolDepth = 900 + (Math.random() * level * 50);
+
+
+	}
+
 	level = localStorage.getItem('level');
 
 	if (level==null)
