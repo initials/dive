@@ -18,7 +18,7 @@ function preload() {
 }
 
 //-----------------------------
-var DEBUG_MODE = false;
+var DEBUG_MODE = true;
 //-----------------------------
 
 
@@ -245,12 +245,14 @@ function create() {
         levelText = levelTextBubbleLetters.create(150 + (i*20), 30, 'bubbleFont');
         levelText.fixedToCamera = true;
         game.physics.enable(levelText, Phaser.Physics.ARCADE);
+        levelText.body.acceleration.y=(50 + (i * 30)) * -1;
+        //levelText.scale = 2;
 
         levelText.frame = textStringForLevelStart[i];
         if (i>5)
         {
         	var j = parseInt(n[i-6]);
-        	console.log(j);
+        	//console.log(j);
         	levelText.frame = 16+j;
         }
 
@@ -459,11 +461,15 @@ function update()
 		}
 		else if (diver.animations.currentAnim.name=='enterWater')
 		{
+			bubbles.start(true, 4000, null, 12);
+
 			diver.body.drag.setTo(2350, 3500);
 			diver.body.acceleration.setTo(0, 0);
 		}
 		else if (diver.animations.currentAnim.name=='swim' || diver.animations.currentAnim.name=='glide')
 		{
+			bubbles.start(true, 4000, null, 12);
+			
 			diver.body.velocity.y = 0;
 			diver.body.drag.setTo(0, 0);
 			diver.body.acceleration.setTo(0, -100);
