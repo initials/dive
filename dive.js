@@ -18,7 +18,7 @@ function preload() {
 }
 
 //-----------------------------
-var DEBUG_MODE = true;
+var DEBUG_MODE = false;
 //-----------------------------
 
 
@@ -66,11 +66,27 @@ var levelText;
 
 var level;
 var levelTextBubbleLetters;
+var scoreTextBubbleLetters;
+
+
+
+var bubbleDict = { 	"A":33,"B":34,"C":35,"D":36,"E":37,"F":38, 
+					"G":39,"H":40,"I":41,"J":42,"K":43,"L":44,
+					"M":45,"N":46,"O":47,"P":48,"Q":49,"R":50, 
+					"S":51,"T":52,"U":53,"V":54,"W":55,"X":56,
+					"Y":57,"Z":58,
+					"0":16,"1":17,"2":18,"3":19,"4":20,"5":21, 
+					"6":22,"7":23,"8":24,"9":25,
+
+
+				};
+
 
 function create() {
 
 	//uncomment to restart
 	//localStorage.removeItem('level');
+	//localStorage.removeItem('score');
 
 	level = localStorage.getItem('level');
 
@@ -80,7 +96,16 @@ function create() {
 		localStorage.setItem('level', level);
 	}
 
-	console.log('level: '+level)
+	score = localStorage.getItem('score');
+	console.log('saved score is: ' + score)
+
+	if (score==null)
+	{
+		score=0;
+		localStorage.setItem('score', score);
+	}
+
+	//console.log('level: '+level)
 	
 	//--TWEET--------------------------------------------------------------------------------------
 	tweet = document.getElementById('tweet');
@@ -122,7 +147,7 @@ function create() {
 	game.physics.enable(poolBottom, Phaser.Physics.ARCADE);
 	poolBottom.body.immovable = true;
 
-	score = 0;
+	//score = 0;
 
 	//add pointer for mobile touching.
 	game.input.addPointer();
@@ -234,15 +259,17 @@ function create() {
 
 	var n = level.toString();
 	var res = n.split("");
-	console.log(res);
+	//console.log(res);
 	
 	levelTextBubbleLetters = game.add.group();
+	scoreTextBubbleLetters = game.add.group();
+
 
 
 	for (var i = 0; i < 8; i++)
     {
         //  Note: alphaIncSpeed is a new property we're adding to Phaser.Sprite, not a pre-existing one
-        levelText = levelTextBubbleLetters.create(150 + (i*20), 30, 'bubbleFont');
+        levelText = levelTextBubbleLetters.create(150 + (i*20), 150, 'bubbleFont');
         levelText.fixedToCamera = true;
         game.physics.enable(levelText, Phaser.Physics.ARCADE);
         levelText.body.acceleration.y=(50 + (i * 30)) * -1;
@@ -255,9 +282,25 @@ function create() {
         	//console.log(j);
         	levelText.frame = 16+j;
         }
-
-
     }
+
+    makeWord(10,10, 'SCORE 000000000');
+
+
+}
+
+function makeWord(x,y,textString)
+{
+	var res = textString.split("");
+
+	for (var i = 0; i < res.length; i++)
+    {
+        levelText = scoreTextBubbleLetters.create(x + (i*20), y, 'bubbleFont');
+        levelText.fixedToCamera = true;
+        game.physics.enable(levelText, Phaser.Physics.ARCADE);
+        levelText.frame = bubbleDict[res[i]]
+    }
+
 
 }
 
@@ -293,7 +336,7 @@ function render() {
 	
 	game.debug.geom(waterLevel, '#ffffff');
 
-	game.debug.text(" Score: " + score + " Level:" + level, 15, 15, '#ffffff');
+	//game.debug.text(" Score: " + score + " Level:" + level, 15, 55, '#ffffff');
 
 
 	if (DEBUG_MODE==true)
@@ -322,6 +365,22 @@ function calculateScore() {
 	}
 	tweet = document.getElementById('tweet');
 	tweet.href = TWEET_PREAMBLE + score + TWEET_PROLOGUE;
+
+	var n = score.toString();
+	var res = n.split("");
+
+	if (score!=0)
+	{
+		for (var i = 0; i < 9; i++)
+		{
+			scoreTextBubbleLetters.getChildAt(i+6).frame = 0;
+		}
+	}
+
+	for (var i = 0; i < res.length; i++)
+	{
+		scoreTextBubbleLetters.getChildAt(i+6).frame = bubbleDict[res[i]];
+	}
 
 }
 
@@ -451,9 +510,6 @@ function update()
 
 			canMoveToNextAnimation=false;
 
-			
-			
-
 		}
 		else if (diver.animations.currentAnim.name=='dive')
 		{
@@ -468,22 +524,30 @@ function update()
 		}
 		else if (diver.animations.currentAnim.name=='swim' || diver.animations.currentAnim.name=='glide')
 		{
-			bubbles.start(true, 4000, null, 12);
-			
+			bubbles.start(true, 4000, null, 1);
+
 			diver.body.velocity.y = 0;
 			diver.body.drag.setTo(0, 0);
 			diver.body.acceleration.setTo(0, -100);
 		}
-		else if (diver.animations.currentAnim.name=='hitFloor' || diver.animations.currentAnim.name=='breathe')
+		else if (diver.animations.currentAnim.name=='hitFloor')
+		{
+			console.log("restarting from hit Floor");
+			game.state.restart();
+		}
+		else if (diver.animations.currentAnim.name=='breathe')
 		{
 			level = localStorage.getItem('level');
 			level++;
 			localStorage.setItem('level', level);
+			localStorage.setItem('score', score);
 
+			console.log("restarting from breathe");
 
 			game.state.restart();
 		}
-		
+
+
 
 	}
 }
