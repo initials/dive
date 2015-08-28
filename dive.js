@@ -77,9 +77,9 @@ var bubbleDict = { 	"A":33,"B":34,"C":35,"D":36,"E":37,"F":38,
 					"Y":57,"Z":58,
 					"0":16,"1":17,"2":18,"3":19,"4":20,"5":21, 
 					"6":22,"7":23,"8":24,"9":25,
-
-
 				};
+
+
 
 
 function create() {
@@ -259,7 +259,7 @@ function create() {
 	for (var i = 0; i < 8; i++)
     {
         //  Note: alphaIncSpeed is a new property we're adding to Phaser.Sprite, not a pre-existing one
-        levelText = levelTextBubbleLetters.create(150 + (i*20), 150, 'bubbleFont');
+        levelText = levelTextBubbleLetters.create(150 + (i*16), 150, 'bubbleFont');
         levelText.fixedToCamera = true;
         game.physics.enable(levelText, Phaser.Physics.ARCADE);
         levelText.body.acceleration.y=(50 + (i * 30)) * -1;
@@ -285,7 +285,7 @@ function makeWord(x,y,textString)
 
 	for (var i = 0; i < res.length; i++)
     {
-        levelText = scoreTextBubbleLetters.create(x + (i*20), y, 'bubbleFont');
+        levelText = scoreTextBubbleLetters.create(x + (i*16), y, 'bubbleFont');
         levelText.fixedToCamera = true;
         game.physics.enable(levelText, Phaser.Physics.ARCADE);
         levelText.frame = bubbleDict[res[i]]
@@ -449,7 +449,7 @@ function update()
 	{
 		var i = animSeq.indexOf(diver.animations.currentAnim.name);
 		
-		if (i<animSeq.length-1) {
+		if (i<animSeq.length-2) {
 			if (diver.animations.currentAnim.name=='swim') 
 			{
 				if (diver.body.x < 901) {
@@ -515,11 +515,7 @@ function update()
 			diver.body.drag.setTo(0, 0);
 			diver.body.acceleration.setTo(0, -100);
 		}
-		else if (diver.animations.currentAnim.name=='hitFloor')
-		{
-			console.log("restarting from hit Floor");
-			game.state.restart();
-		}
+
 		else if (diver.animations.currentAnim.name=='breathe')
 		{
 			level = localStorage.getItem('level');
@@ -531,6 +527,13 @@ function update()
 
 			game.state.restart();
 		}
+
+		else if (diver.animations.currentAnim.name=='hitFloor')
+		{
+			console.log("restarting from hit Floor");
+			game.state.restart();
+		}
+
 	}
 }
 
