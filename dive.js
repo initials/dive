@@ -208,9 +208,7 @@ function create() {
 
     waterLevel = new Phaser.Line(0, diveHeight, 9000, diveHeight);
 
-
 	bubbles = game.add.emitter(0, 0, 100);
-
     bubbles.makeParticles('bubble', [0, 1, 2, 3, 4, 5]);
     bubbles.gravity = -20;
 	bubbles.width=40;
@@ -220,11 +218,7 @@ function create() {
 	bubbles.setXSpeed(-20, 20);
     bubbles.setYSpeed(-15, -55);
 
-
-
-
 	multipliers = game.add.emitter(0, 0, 100);
-
     multipliers.makeParticles('bubbleFont', [17,18,19,20,21]);
     multipliers.gravity = -20;
 	multipliers.width=1;
@@ -234,7 +228,6 @@ function create() {
 	multipliers.setXSpeed(-20, 20);
     multipliers.setYSpeed(-105, 5);    
 
-
     game.input.justPressedRate = 25;
 	
 	game.world.setBounds(0, 0, poolSide.width + poolWidth + divingPlatform.width, 9000);
@@ -243,7 +236,6 @@ function create() {
     timeUnderwater=0;
 
     canMoveToNextAnimation=true;
-
 
 	splashSprite = game.add.sprite(-100, -100, 'splash');
 
@@ -263,8 +255,6 @@ function create() {
 	
 	levelTextBubbleLetters = game.add.group();
 	scoreTextBubbleLetters = game.add.group();
-
-
 
 	for (var i = 0; i < 8; i++)
     {
@@ -354,8 +344,6 @@ function render() {
 		game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000');
 		
 	}
-	
-	
 }
 
 function calculateScore() {
@@ -389,7 +377,6 @@ function update()
 
 	calculateScore();
 
-
 	if (timeUnderwater>1 && timeUnderwater<40)
 	{
 		bubbles.start(true, 2000, null, 2);
@@ -398,10 +385,8 @@ function update()
 	bubbles.x = diver.body.x + diver.body.width/2;
 	bubbles.y = diver.body.y + diver.body.height/2;
 
-
 	multipliers.x = diver.body.x + diver.body.width/2;
 	multipliers.y = diver.body.y ;
-
 
 	game.physics.arcade.collide(diver, divingPlatform, hitPlatform, null, this);
 	game.physics.arcade.collide(diver, poolSide, hitSide, null, this);
@@ -546,9 +531,6 @@ function update()
 
 			game.state.restart();
 		}
-
-
-
 	}
 }
 
