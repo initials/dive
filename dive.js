@@ -18,7 +18,7 @@ function preload() {
 }
 
 //-----------------------------
-var DEBUG_MODE = false;
+var DEBUG_MODE = true;
 //-----------------------------
 
 
@@ -30,7 +30,11 @@ var poolSide;
 var diver;
 var waterLevel;
 var poolBottom;
+
 var GRAVITY=980;
+var LEVEL_SWITCHING_REGULARITY = 4;
+
+
 var splashSprite;
 
 
@@ -67,6 +71,7 @@ var levelText;
 var level;
 var levelTextBubbleLetters;
 var scoreTextBubbleLetters;
+var otherTextBubbleLetters;
 
 
 
@@ -87,15 +92,34 @@ function create() {
 	//uncomment to restart
 	//localStorage.removeItem('level');
 	//localStorage.removeItem('score');
+	
+	game.stage.backgroundColor = '#0073ef';
 
-	if (level<4)
+	if (level>4)
 	{
-		diveHeight = 1035 + (Math.random() * level * 50); 
-		poolWidth = 2700 + (Math.random() * level * 50);
-		poolDepth = 900 + (Math.random() * level * 50);
+		diveHeight = 1035 + (Math.random() * level * 550); 
+		poolWidth = 2700 + (Math.random() * level * 550);
+		poolDepth = 900 + (Math.random() * level * 550);
 
-
+		q = level % LEVEL_SWITCHING_REGULARITY;
+		if (q==0)
+		{
+			game.stage.backgroundColor = '#697d93';
+		}
+		else if (q==1)
+		{
+			game.stage.backgroundColor = '#f29867';
+		}
+		else if (q==2)
+		{
+			game.stage.backgroundColor = '#f2e767';
+		}
+			
 	}
+
+	console.log("POOL CREATION STATS " + diveHeight + " " + poolWidth + " " + poolDepth)
+	
+
 
 	level = localStorage.getItem('level');
 
@@ -124,7 +148,7 @@ function create() {
 	//this.tweetElement.href = this.TWEET_PREAMBLE + this.score + this.TWEET_PROLOGUE;
 	//----------------------------------------------------------------------------------------
 
-	game.stage.backgroundColor = '#0073ef';
+	
 
 	jumpPoint = poolSideWidth + poolWidth;
 
@@ -264,6 +288,7 @@ function create() {
 	
 	levelTextBubbleLetters = game.add.group();
 	scoreTextBubbleLetters = game.add.group();
+	otherTextBubbleLetters = game.add.group();
 
 	for (var i = 0; i < 8; i++)
     {
@@ -285,6 +310,11 @@ function create() {
 
     makeWord(10,10, 'SCORE 000000000');
 
+	var words = "POOL HEIGHT " + diveHeight + "\nPOOL WIDTH " + poolWidth + "\nPOOL DEPTH " + poolDepth;
+	
+	makeOtherWord(150, 170, "POOL HEIGHT " + parseInt(diveHeight.toString()));
+	makeOtherWord(150, 190, "POOL WIDTH " + parseInt(poolWidth.toString()));
+	makeOtherWord(150, 210, "POOL DEPTH " + parseInt(poolDepth.toString()));
 
 }
 
@@ -299,8 +329,22 @@ function makeWord(x,y,textString)
         game.physics.enable(levelText, Phaser.Physics.ARCADE);
         levelText.frame = bubbleDict[res[i]]
     }
+}
 
+function makeOtherWord(x,y,textString)
+{
+	var res = textString.split("");
 
+	for (var i = 0; i < res.length; i++)
+    {
+        levelText = otherTextBubbleLetters.create(x + (i*16), y, 'bubbleFont');
+        levelText.fixedToCamera = true;
+        game.physics.enable(levelText, Phaser.Physics.ARCADE);
+        levelText.frame = bubbleDict[res[i]];
+        
+        levelText.body.acceleration.y=((10 + y) + (i * 30)) * -1;
+
+    }
 }
 
 function moveToNextAnimation(sprite, animation) 
@@ -453,6 +497,31 @@ function update()
 		}
 	}
 
+	if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) && DEBUG_MODE==true)
+    {
+        level = localStorage.getItem('level');
+		level++;
+		localStorage.setItem('level', level);
+		localStorage.setItem('score', score);
+
+		console.log("Debug - next level");
+
+		game.state.restart();
+
+    }
+
+	if (game.input.keyboard.isDown(Phaser.Keyboard.UP) && DEBUG_MODE==true)
+    {
+		localStorage.removeItem('level');
+		localStorage.removeItem('score');
+
+		console.log("Debug - reset to level 1");
+
+
+    }
+
+
+
 	//if (game.input.mousePointer.isDown || game.input.touch.isDown || game.input.isDown || game.input.pointer1.isDown)
 	if (game.input.mousePointer.justPressed())
 	{
@@ -485,6 +554,12 @@ function update()
 		if (diver.animations.currentAnim.name=='run')
 		{
 			levelTextBubbleLetters.forEach(function(item) {
+				item.fixedToCamera = false;
+		        item.alpha = 0.5;
+		        
+		    });
+
+			otherTextBubbleLetters.forEach(function(item) {
 				item.fixedToCamera = false;
 		        item.alpha = 0.5;
 		        
