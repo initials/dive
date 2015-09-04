@@ -6,21 +6,15 @@ function preload() {
 	game.load.spritesheet('diver', 'diver_05.png', 128, 128);
 	game.load.spritesheet('tiles', 'tile.png', 9,9,9);
 	game.load.spritesheet('tiles_90x90', 'tile_90x90.png', 90,90,90);
-	
 	game.load.spritesheet('bubble', 'bubble.png', 8, 8);
 	game.load.spritesheet('cloud', 'clouds.png', 124, 37);
 	game.load.spritesheet('splash', 'splash.png', 37, 20);
-	
 	game.load.spritesheet('bubbleFont', 'font.png', 16,16);
-
-	
-	
 }
 
 //-----------------------------
-var DEBUG_MODE = true;
+var DEBUG_MODE = false;
 //-----------------------------
-
 
 var score = 0;
 
@@ -30,14 +24,9 @@ var poolSide;
 var diver;
 var waterLevel;
 var poolBottom;
-
 var GRAVITY=980;
 var LEVEL_SWITCHING_REGULARITY = 4;
-
-
 var splashSprite;
-
-
 var tweet;
 var TWEET_PREAMBLE = 'https://twitter.com/intent/tweet?text=Summer time, lets dive ';
 var TWEET_PROLOGUE = ' http://www.initialsgames.com/dive/ &hashtags=8bitsummer ';
@@ -54,27 +43,17 @@ var skyGap = 270;
 // ----------- calculate based on level
 
 var jumpPoint;
-
 var bubbles;
 var multipliers;
-
 var timeUnderwater;
-
 var CustomSpr;
-
 var canMoveToNextAnimation;
-
 var bubbleText;
 var levelText;
-
-
 var level;
 var levelTextBubbleLetters;
 var scoreTextBubbleLetters;
 var otherTextBubbleLetters;
-
-
-
 var bubbleDict = { 	"A":33,"B":34,"C":35,"D":36,"E":37,"F":38, 
 					"G":39,"H":40,"I":41,"J":42,"K":43,"L":44,
 					"M":45,"N":46,"O":47,"P":48,"Q":49,"R":50, 
@@ -83,9 +62,6 @@ var bubbleDict = { 	"A":33,"B":34,"C":35,"D":36,"E":37,"F":38,
 					"0":16,"1":17,"2":18,"3":19,"4":20,"5":21, 
 					"6":22,"7":23,"8":24,"9":25,
 				};
-
-
-
 
 function create() {
 
@@ -118,8 +94,6 @@ function create() {
 	}
 
 	console.log("POOL CREATION STATS " + diveHeight + " " + poolWidth + " " + poolDepth)
-	
-
 
 	level = localStorage.getItem('level');
 
@@ -147,8 +121,6 @@ function create() {
 
 	//this.tweetElement.href = this.TWEET_PREAMBLE + this.score + this.TWEET_PROLOGUE;
 	//----------------------------------------------------------------------------------------
-
-	
 
 	jumpPoint = poolSideWidth + poolWidth;
 
@@ -342,7 +314,7 @@ function makeOtherWord(x,y,textString)
         game.physics.enable(levelText, Phaser.Physics.ARCADE);
         levelText.frame = bubbleDict[res[i]];
         
-        levelText.body.acceleration.y=((10 + y) + (i * 30)) * -1;
+        levelText.body.acceleration.x=((10 + y) + (i * 30)) * -1;
 
     }
 }
