@@ -13,7 +13,7 @@ function preload() {
 }
 
 //-----------------------------
-var DEBUG_MODE = true;
+var DEBUG_MODE = false;
 //-----------------------------
 
 var score = 0;
@@ -441,14 +441,14 @@ function update()
 		}
 
 	}
-	else if (diver.animations.currentAnim.name=='swan')
-	{
-		if (diver.body.acceleration.x < -20) 
-		{
-			diver.body.acceleration.x += 3;	
-		}		
-		//diver.body.velocity.x += 1;
-	}
+	// else if (diver.animations.currentAnim.name=='swan')
+	// {
+	// 	if (diver.body.acceleration.x < -20) 
+	// 	{
+	// 		diver.body.acceleration.x += 3;	
+	// 	}		
+	// 	//diver.body.velocity.x += 1;
+	// }
 
 	if (splashSprite.alpha>0.09)
 		splashSprite.alpha -= 0.0251;
