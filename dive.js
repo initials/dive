@@ -13,7 +13,7 @@ function preload() {
 }
 
 //-----------------------------
-var DEBUG_MODE = false;
+var DEBUG_MODE = true;
 //-----------------------------
 
 var score = 0;
@@ -360,10 +360,10 @@ function render() {
 		game.debug.spriteInfo(diver, 0, 100);
 		game.debug.spriteBounds(diver);
 		
-		game.debug.text(diver.animations.currentAnim.name + " v.x:" + Math.floor(diver.body.velocity.x) + 
-			" v.y:" + Math.floor(diver.body.velocity.y) + " a.x:" + Math.floor(diver.body.acceleration.x) + 
-			" a.y:" + Math.floor(diver.body.acceleration.y) + " d.x:" + Math.floor(diver.body.drag.x) + 
-			" d.y:" + Math.floor(diver.body.drag.y), 10, 10, '#ff0000');
+		game.debug.text(diver.animations.currentAnim.name + " vel.x:" + Math.floor(diver.body.velocity.x) + 
+			" vel.y:" + Math.floor(diver.body.velocity.y) + " acc.x:" + Math.floor(diver.body.acceleration.x) + 
+			" acc.y:" + Math.floor(diver.body.acceleration.y) + " drag.x:" + Math.floor(diver.body.drag.x) + 
+			" drag.y:" + Math.floor(diver.body.drag.y), 10, 10, '#ff0000');
 
 		game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000');
 		game.debug.text(Math.floor(diver.x) + " " + Math.floor(diver.y) + " " + diver.body.touching.down + " Score: " + score, 10, 50, '#ff0000');
@@ -441,6 +441,15 @@ function update()
 		}
 
 	}
+	else if (diver.animations.currentAnim.name=='swan')
+	{
+		if (diver.body.acceleration.x < -20) 
+		{
+			diver.body.acceleration.x += 3;	
+		}		
+		//diver.body.velocity.x += 1;
+	}
+
 	if (splashSprite.alpha>0.09)
 		splashSprite.alpha -= 0.0251;
 
@@ -544,8 +553,16 @@ function update()
 		{
 			//jump
 			console.log("jump!");
+			//diver.body.acceleration.x = 0;			
+
+			//diver.body.velocity.x = 0;
+
 			diver.body.velocity.y = -300;
+
+
+			diver.body.drag.x = 50000;
 			diver.body.drag.y = 100;
+			
 
 			diver.body.setSize(48, 30, 40, 50);
 
