@@ -13,7 +13,7 @@ function preload() {
 }
 
 //-----------------------------
-var DEBUG_MODE = false;
+var DEBUG_MODE = true;
 //-----------------------------
 
 var score = 0;
@@ -358,7 +358,7 @@ function render() {
 	{
 		game.debug.body(diver);
 		game.debug.spriteInfo(diver, 0, 100);
-		game.debug.spriteBounds(diver);
+		//game.debug.spriteBounds(diver);
 		
 		game.debug.text(diver.animations.currentAnim.name + " vel.x:" + Math.floor(diver.body.velocity.x) + 
 			" vel.y:" + Math.floor(diver.body.velocity.y) + " acc.x:" + Math.floor(diver.body.acceleration.x) + 
@@ -441,14 +441,19 @@ function update()
 		}
 
 	}
-	// else if (diver.animations.currentAnim.name=='swan')
-	// {
-	// 	if (diver.body.acceleration.x < -20) 
-	// 	{
-	// 		diver.body.acceleration.x += 3;	
-	// 	}		
-	// 	//diver.body.velocity.x += 1;
-	// }
+	else if (diver.animations.currentAnim.name=='swan')
+	{
+		if (diver.body.acceleration.x < -3) 
+		{
+			diver.body.acceleration.x += 3;	
+		}
+		if (diver.body.velocity.x < -15) 
+		{
+			diver.body.velocity.x += 3;	
+		}	
+
+		//diver.body.velocity.x += 1;
+	}
 
 	if (splashSprite.alpha>0.09)
 		splashSprite.alpha -= 0.0251;
@@ -580,13 +585,21 @@ function update()
 			diver.body.drag.setTo(2350, 3500);
 			diver.body.acceleration.setTo(0, 0);
 		}
-		else if (diver.animations.currentAnim.name=='swim' || diver.animations.currentAnim.name=='glide')
+		else if (diver.animations.currentAnim.name=='swim')
 		{
-			bubbles.start(true, 4000, null, 1);
-
+			bubbles.start(true, 4000, null, 5);
+			diver.body.velocity.x = -120;
 			diver.body.velocity.y = 0;
 			diver.body.drag.setTo(0, 0);
-			diver.body.acceleration.setTo(0, -100);
+			diver.body.acceleration.setTo(-120, -100);
+		}
+		else if (diver.animations.currentAnim.name=='glide')
+		{
+			bubbles.start(true, 4000, null, 5);
+			diver.body.velocity.x = -120;
+			diver.body.velocity.y = 0;
+			diver.body.drag.setTo(0, 0);
+			diver.body.acceleration.setTo(-120, -100);
 		}
 
 		else if (diver.animations.currentAnim.name=='breathe')
