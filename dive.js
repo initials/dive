@@ -13,7 +13,7 @@ function preload() {
 }
 
 //-----------------------------
-var DEBUG_MODE = true;
+var DEBUG_MODE = false;
 //-----------------------------
 
 var score = 0;
@@ -580,26 +580,27 @@ function update()
 		}
 		else if (diver.animations.currentAnim.name=='enterWater')
 		{
+			console.log("enter water");
 			bubbles.start(true, 4000, null, 12);
 
 			diver.body.drag.setTo(2350, 3500);
-			diver.body.acceleration.setTo(0, 0);
+			diver.body.acceleration.setTo(-120, 0);
 		}
 		else if (diver.animations.currentAnim.name=='swim')
 		{
 			bubbles.start(true, 4000, null, 5);
-			diver.body.velocity.x = -120;
+			//diver.body.velocity.x = -120;
 			diver.body.velocity.y = 0;
 			diver.body.drag.setTo(0, 0);
-			diver.body.acceleration.setTo(-120, -100);
+			diver.body.acceleration.setTo(0, -100);
 		}
 		else if (diver.animations.currentAnim.name=='glide')
 		{
 			bubbles.start(true, 4000, null, 5);
-			diver.body.velocity.x = -120;
+			//diver.body.velocity.x = -120;
 			diver.body.velocity.y = 0;
 			diver.body.drag.setTo(0, 0);
-			diver.body.acceleration.setTo(-120, -100);
+			diver.body.acceleration.setTo(0, -100);
 		}
 
 		else if (diver.animations.currentAnim.name=='breathe')
