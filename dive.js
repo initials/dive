@@ -509,7 +509,7 @@ function update()
 
 
 	//if (game.input.mousePointer.isDown || game.input.touch.isDown || game.input.isDown || game.input.pointer1.isDown)
-	if (game.input.mousePointer.justPressed())
+	if (game.input.mousePointer.justPressed() || game.input.touch.justPressed() )
 	{
 		var i = animSeq.indexOf(diver.animations.currentAnim.name);
 		
