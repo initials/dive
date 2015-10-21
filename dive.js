@@ -10,6 +10,9 @@ function preload() {
 	game.load.spritesheet('cloud', 'clouds.png', 124, 37);
 	game.load.spritesheet('splash', 'splash.png', 37, 20);
 	game.load.spritesheet('bubbleFont', 'font.png', 16,16);
+
+	game.load.audio('splash', 'audio/splash_lo.mp3');
+
 }
 
 //-----------------------------
@@ -70,6 +73,8 @@ function create() {
 	//localStorage.removeItem('score');
 	
 	game.stage.backgroundColor = '#0073ef';
+
+	splash = game.add.audio('splash');
 
 	if (level>4)
 	{
@@ -470,6 +475,8 @@ function update()
 
 		console.log('!-- Has entered Water --!\nCurrent Anim: ' + diver.animations.currentAnim.name + ' Frame: ' + diver.animations.currentAnim.frame );
 
+		splash.play();
+
 		if (diver.animations.currentAnim.name=='dive' && diver.animations.currentAnim.frame == 27)
 		{
 			score+=100;
@@ -509,7 +516,7 @@ function update()
 
 
 	//if (game.input.mousePointer.isDown || game.input.touch.isDown || game.input.isDown || game.input.pointer1.isDown)
-	if (game.input.mousePointer.justPressed() || game.input.touch.justPressed() )
+	if (game.input.mousePointer.justPressed()  ) //|| game.input.touch.justPressed()
 	{
 		var i = animSeq.indexOf(diver.animations.currentAnim.name);
 		
